@@ -146,7 +146,7 @@ function createWorld()
   for i=1, world.sizex, 1 do
     world.map[i] = {}
     for j=1, world.sizey, 1 do
-      world.map[i][j] = {box = love.math.random(-1,1+world.diff), x=i, y=j, offsetx=0, offsety=0}
+      world.map[i][j] = {box = love.math.random(0,1+world.diff), x=i, y=j, offsetx=0, offsety=0}
     end
   end
   world.map[1][1].box = 0
@@ -224,8 +224,8 @@ function checkWin()
     player.sqmy=1
     player.targetx=1
     player.targety=1
-    player.shifts=700+world.diff*7
-    player.ammo=1000*world.diff
+    player.shifts=7+world.diff*7
+    player.ammo=10*world.diff
     remakeWorld()
   end
 end
@@ -252,7 +252,7 @@ function love.load()
   world = {
     sizex = math.ceil(love.window.getWidth()/32),
     sizey = math.ceil(love.window.getHeight()/32),
-    diff = 5,
+    diff = 0,
     }
   player = {
     charQuads = {},
