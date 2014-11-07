@@ -205,7 +205,7 @@ end
 function remakeWorld()
   for i=1, world.sizex, 1 do
     for j=1, world.sizey, 1 do
-      if world.diff > 2 then
+      if world.diff > 2 and i < world.sizex-1 and j < world.sizey-1 then
         world.map[i][j].box = love.math.random(-1,1+world.diff)
       else world.map[i][j].box = love.math.random(0,1+world.diff)
       end
@@ -215,6 +215,7 @@ function remakeWorld()
   world.map[1][2].box = 0
   world.map[2][1].box = 0
   world.map[2][2].box = 0
+  
 end
 
 function checkWin()
