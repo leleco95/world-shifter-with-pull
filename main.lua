@@ -179,13 +179,13 @@ function shootBullet(dir, dt)
     player.ammo = player.ammo - 1
     player.fire_timer = 0
     if dir == "up" then
-      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx+16, py=(player.sqmy-1)*32+player.offsety, xvel=0, yvel=-1})
+      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx+16, py=(player.sqmy)*32+player.offsety, xvel=0, yvel=-1})
     elseif dir == "down" then
-      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx+16, py=(player.sqmy-1)*32+player.offsety+32, xvel=0, yvel=1})
+      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx+16, py=(player.sqmy)*32+player.offsety+32, xvel=0, yvel=1})
     elseif dir == "left" then
-      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx, py=(player.sqmy-1)*32+player.offsety+16, xvel=-1, yvel=0})
+      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx, py=(player.sqmy)*32+player.offsety+16, xvel=-1, yvel=0})
     elseif dir == "right" then
-      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx+32, py=(player.sqmy-1)*32+player.offsety+16, xvel=1, yvel=0})
+      table.insert(bullets.info, {px=(player.sqmx-1)*32+player.offsetx+32, py=(player.sqmy)*32+player.offsety+16, xvel=1, yvel=0})
     end
   end
 end
@@ -235,7 +235,7 @@ function checkBulletCollision()
   for i=1,world.sizex,1 do
     for j=1,world.sizey,1 do
       for k=#bullets.info,1,-1 do
-        if bullets.info[k].px >= (i-1)*32 and bullets.info[k].px <= i*32 and bullets.info[k].py >= (j-1)*32 and bullets.info[k].py <= j*32 and world.map[i][j].box ~= -1 and (world.map[i][j].box%3) == 2 then
+        if bullets.info[k].px >= (i-1)*32 and bullets.info[k].px <= i*32 and bullets.info[k].py >= (j)*32 and bullets.info[k].py <= (j+1)*32 and world.map[i][j].box ~= -1 and (world.map[i][j].box%3) == 2 then
           table.remove(bullets.info, k)
           world.map[i][j].box = 0
         end
@@ -246,13 +246,14 @@ end
 
 function love.load()
   love.window.setTitle("World Shifter")
+  love.window.setMode(800, 608, {resizable=false})
   map = {
     image = love.graphics.newImage("tileset2.png"),
     Quads = {},
     }
   world = {
     sizex = math.ceil(love.window.getWidth()/32),
-    sizey = math.ceil(love.window.getHeight()/32),
+    sizey = math.ceil(love.window.getHeight()/32)-1,
     diff = 0,
     }
   player = {
@@ -353,7 +354,7 @@ function love.keypressed(key)
       player.sqmy=1
       player.targetx=1
       player.targety=1
-      player.shifts=10+world.diff*7
+      player.shifts=7+world.diff*7
       player.ammo=10*world.diff
       remakeWorld()
     end
@@ -365,12 +366,12 @@ function love.draw()
   for i=1, world.sizex, 1 do
     for j=1, world.sizey, 1 do
       if world.map[i][j].box == -1 then
-        love.graphics.draw(map.image, map.Quads[7], (i-1)*32+world.map[i][j].offsetx, (j-1)*32+world.map[i][j].offsety)
+        love.graphics.draw(map.image, map.Quads[7], (i-1)*32+world.map[i][j].offsetx, (j)*32+world.map[i][j].offsety)
         --love.graphics.print("".. ((player.targetx - player.sqmx)/(math.abs(player.targetx - player.sqmx))) .."", (i-1)*32+world.map[i][j].offsetx, (j-1)*32+world.map[i][j].offsety)
       elseif (world.map[i][j].box%3) == 1 then
-        love.graphics.draw(map.image, map.Quads[8], (i-1)*32, (j-1)*32)
+        love.graphics.draw(map.image, map.Quads[8], (i-1)*32, (j)*32)
       elseif (world.map[i][j].box%3) == 2 then
-        love.graphics.draw(map.image, map.Quads[7], (i-1)*32, (j-1)*32)
+        love.graphics.draw(map.image, map.Quads[7], (i-1)*32, (j)*32)
       end
     end
   end
@@ -380,6 +381,8 @@ function love.draw()
     else love.graphics.rectangle("fill", bullets.info[i].px, bullets.info[i].py, 2, 5)
     end
   end
-  love.graphics.draw(player.charImage, player.charQuads[player.frame], (player.sqmx-1)*32 + player.offsetx, (player.sqmy-1) * 32 + player.offsety)
+  love.graphics.print("Level: " .. world.diff .. " \t Ammo: " .. player.ammo .. " \t Shifts: " .. player.shifts .. "", 0, 0)
+  love.graphics.line(0,32,global.sizex,32)
+  love.graphics.draw(player.charImage, player.charQuads[player.frame], (player.sqmx-1)*32 + player.offsetx, (player.sqmy) * 32 + player.offsety)
   love.graphics.setColor(255,0,0)
 end
